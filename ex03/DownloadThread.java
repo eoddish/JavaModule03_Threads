@@ -31,9 +31,16 @@ public class DownloadThread extends Thread {
         return ready;
     }
 
-    public synchronized void  run() {
+    public  void  run() {
 
         while (true) {
+            synchronized (this) {
+                try {
+                    wait();
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
             if (ready == 1) {
 
                 System.out.println("Thread-" + (number + 1) + " start download file number " + (fileNumber + 1));

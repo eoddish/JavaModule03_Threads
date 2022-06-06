@@ -5,7 +5,7 @@ import java.nio.file.*;
 
 public class Program {
 
-    public static int threadsSum = 0;
+    public static int finish = 0;
 
     public static void main(String[] args) {
         if (args.length < 1
@@ -36,13 +36,24 @@ public class Program {
 
         int count = 0;
         int complete[] = new int[list.size()];
+
         while (count < list.size()) {
             for (int i = 0; i < list.size(); i++) {
+                if (complete[i] == 1)
+                    continue;
                 for (int j = 0; j < threadsCount; j++) {
-                    if (downLoadThreads[j].getReady() == 0 && complete[i] == 0) {
+                    if (downLoadThreads[j].getReady() == 0) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (Exception e) {
+                            System.out.println(e);
+                        }
                         downLoadThreads[j].setUrl(list.get(i));
                         downLoadThreads[j].setFileNumber(i);
                         downLoadThreads[j].setReady(1);
+                        synchronized (downLoadThreads[j]) {
+                            downLoadThreads[j].notify();
+                        }
                         count++;
                         complete[i] += 1;
                         break;
